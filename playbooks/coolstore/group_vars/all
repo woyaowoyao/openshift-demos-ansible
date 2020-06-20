@@ -31,7 +31,7 @@ project_default_name: "CoolStore MSA"
 project_default_desc: "CoolStore MSA"
 
 
-github_account: jbossdemocentral
+github_account: woyaowoyao
 github_ref: ocp-3.11
 
 ephemeral: false
