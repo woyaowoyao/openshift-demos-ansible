@@ -21,20 +21,20 @@
       set_hostname_suffix: false
 
   - name: check if image builder project exists
-    shell: "{{ openshift_cli }} get project {{ project_name }}"
+    shell: "{{ openshift_cli }} get project coolstore-image-builds"
     register: result
     ignore_errors: true
     changed_when: false
 
-  - name: create image builder project {{ project_name }}
-    shell: "{{ openshift_cli }} new-project {{ project_name }} --description='DO NOT REMOVE THIS PROJECT. NEEDED FOR COOLSTORE DEMO'"
+  - name: create image builder project coolstore-image-builds
+    shell: "{{ openshift_cli }} new-project coolstore-image-builds --description='DO NOT REMOVE THIS PROJECT. NEEDED FOR COOLSTORE DEMO'"
     ignore_errors: true
     when: result is failed
 
   - import_role:
       name: openshift_jenkins
     vars:
-      project_name: "{{ project_name }}"
+      project_name: "coolstore-image-builds"
       jenkins_max_cpu: 2
 
   - name: create coolstore image build pipeline
