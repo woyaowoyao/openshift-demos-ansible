@@ -16,5 +16,5 @@
         project_name: cicd-{{ project_suffix }}
 
     - name: deploy demo demo_template_brewery_1
-      shell: "{{ openshift_cli }} process -f {{ demo_template_brewery_1 }} --param DEV_PROJECT=dev-{{ project_suffix }} --param STAGE_PROJECT=stage-{{ project_suffix }} --param=WITH_CHE={{ enable_che|string|lower }} --param=EPHEMERAL={{ ephemeral|string|lower }} -n cicd-{{ project_suffix }} | {{ openshift_cli }} create -f - -n cicd-{{ project_suffix }}"
+      shell: "{{ openshift_cli }} process -f {{ demo_template_brewery_1 }} --param DEV_PROJECT=dev-{{ project_suffix }} --param STAGE_PROJECT=stage-{{ project_suffix }}  --param=EPHEMERAL={{ ephemeral|string|lower }} -n cicd-{{ project_suffix }} | {{ openshift_cli }} create -f - -n cicd-{{ project_suffix }}"
       ignore_errors: true
