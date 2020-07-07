@@ -1,3 +1,7 @@
+ 
+git clone https://github.com/woyaowoyao/openshift-demos-ansible.git
+cd openshift-demos-ansible/
+git checkout ocp-3.11
 ansible-galaxy install -r playbooks/coolstore/requirements.yml
 ansible-playbook playbooks/cd/deploy.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=dij"
 ansible-playbook playbooks/cd/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=true project_suffix=dij"
