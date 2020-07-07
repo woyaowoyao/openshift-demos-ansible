@@ -7,7 +7,7 @@ openshift_cli: oc
 project_suffix: demo
 project_admin: 
 
-github_account: OpenShiftDemos
+github_account: woyaowoyao
 github_ref: ocp-3.11
 
 ephemeral: false
