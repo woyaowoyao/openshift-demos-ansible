@@ -1,0 +1,4 @@
+cd openshift-demos-ansible
+ansible-galaxy install -r playbooks/coolstore/requirements.yml
+ansible-playbook playbooks/cd/deploy-brewery-1.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=dij"
+ansible-playbook playbooks/cd/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=true project_suffix=dij"
