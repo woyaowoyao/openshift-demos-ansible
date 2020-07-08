@@ -5,3 +5,20 @@ ansible-playbook playbooks/cd/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=t
 
 #导入gogs 及jenkins build
 ansible-playbook playbooks/cd-v1/deploy-brewery-3.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
+
+oc delete rolebindings/default_admin3 -n cicd-andrew
+
+oc delete job.batch/cicd-demo-installer3  -n cicd-andrew
+
+oc delete configmaps/jenkins-slaves3  -n cicd-andrew
+
+oc delete bc/brewary3-pipeline  -n cicd-andrew
+
+oc adm policy add-scc-to-user privileged -z dev-andrew
+
+oc adm policy add-scc-to-user anyuid -z dev-andrew
+
+oc adm policy add-scc-to-user privileged -z dev-brewery2
+
+oc adm policy add-scc-to-user anyuid -z dev-brewery2
+
