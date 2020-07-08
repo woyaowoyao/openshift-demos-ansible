@@ -17,3 +17,5 @@ enable_che: true
 demo_template: https://raw.githubusercontent.com/{{ github_account }}/openshift-cd-demo/{{ github_ref }}/cicd-template.yaml
 
 demo_template_brewery_1: https://raw.githubusercontent.com/{{ github_account }}/openshift-cd-demo/{{ github_ref }}/cicd-template-brewery-1.yaml
+
+demo_template_brewery_3: https://raw.githubusercontent.com/{{ github_account }}/openshift-cd-demo/{{ github_ref }}/cicd-template-brewery-3.yaml
