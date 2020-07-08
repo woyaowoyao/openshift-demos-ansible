@@ -22,3 +22,5 @@ oc adm policy add-scc-to-user privileged -z dev-brewery2
 
 oc adm policy add-scc-to-user anyuid -z dev-brewery2
 
+
+ansible-playbook playbooks/cd-v1/deploy-brewery-2.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
