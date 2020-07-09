@@ -12,7 +12,7 @@ github_ref: ocp-3.11
 
 github_account2: woyaofuwu
 github_ref2: iteration-2
-
+github_ref3: iteration-3
 ephemeral: false
 
 enable_che: true
@@ -24,3 +24,5 @@ demo_template_brewery_1: https://raw.githubusercontent.com/{{ github_account }}/
 demo_template_brewery_3: https://raw.githubusercontent.com/{{ github_account }}/openshift-cd-demo/{{ github_ref }}/cicd-template-brewery-3.yaml
 
 demo_template_brewery_2: https://raw.githubusercontent.com/{{ github_account2 }}/brewery/{{ github_ref2 }}/cicd-template-brewery-2.yaml
+
+demo_template_brewery_33: https://raw.githubusercontent.com/{{ github_account2 }}/brewery/{{ github_ref3 }}/cicd-template-brewery-3.yaml

@@ -1,0 +1,20 @@
+---
+- name: Deploy Brewery Microservices Demo
+  hosts: localhost
+  gather_facts: false
+  run_once: true
+
+  tasks:
+    - include_role:
+        name: openshift_common_facts
+      vars:
+        set_hostname_suffix: false
+  
+    - import_role:
+        name: openshift_jenkins
+      vars:
+        project_name: cicd-{{ project_suffix }}
+
+    - name: deploy  demo_template_brewery_33
+      shell: "{{ openshift_cli }} process -f {{ demo_template_brewery_33 }} --param DEV_PROJECT=dev-{{ project_suffix }} --param STAGE_PROJECT=stage-{{ project_suffix }}  --param=EPHEMERAL={{ ephemeral|string|lower }} -n cicd-{{ project_suffix }} | {{ openshift_cli }} create -f - -n cicd-{{ project_suffix }}"
+      ignore_errors: true
