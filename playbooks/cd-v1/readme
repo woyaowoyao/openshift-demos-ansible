@@ -40,3 +40,6 @@ Error from server (BadRequest): cannot trigger a deployment for "rabbitmq" becau
 
 解决->
 oc import-image rabbitmq:management --confirm --from  docker.io/rabbitmq:management --insecure
+
+
+ansible-playbook playbooks/cd-v1/deploy-brewery-33.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
