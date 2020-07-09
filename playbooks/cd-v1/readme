@@ -3,6 +3,8 @@ ansible-galaxy install -r playbooks/coolstore/requirements.yml
 ansible-playbook playbooks/cd-v1/deploy-brewery-1.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
 ansible-playbook playbooks/cd/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=true project_suffix=dij"
 
+1.
+
 #导入gogs 及jenkins build
 ansible-playbook playbooks/cd-v1/deploy-brewery-3.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
 
@@ -22,6 +24,7 @@ oc adm policy add-scc-to-user privileged -z dev-brewery2
 
 oc adm policy add-scc-to-user anyuid -z dev-brewery2
 
+2.
 
 ansible-playbook playbooks/cd-v1/deploy-brewery-2.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
 
@@ -41,5 +44,19 @@ Error from server (BadRequest): cannot trigger a deployment for "rabbitmq" becau
 解决->
 oc import-image rabbitmq:management --confirm --from  docker.io/rabbitmq:management --insecure
 
+3.
+
+oc new-project dev-brewery
+
+oc policy add-role-to-group edit system:serviceaccounts:cicd-andrew -n dev-brewery3
+
+//oc policy add-role-to-group edit system:serviceaccounts:cicd-andrew -n stage-demo1
+
+#配置跨项目访问,比如以下三项目可以互相访问 cicd-demo1 dev-andrew stage-andrew
+oc adm pod-network join-projects --to=cicd-andrew dev-brewery3 // stage-andrew
+
+oc adm policy add-scc-to-user privileged -z dev-brewery3
+
+oc adm policy add-scc-to-user anyuid -z dev-brewery3
 
 ansible-playbook playbooks/cd-v1/deploy-brewery-33.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
