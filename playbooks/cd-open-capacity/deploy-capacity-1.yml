@@ -15,6 +15,6 @@
       vars:
         project_name: cicd-{{ project_suffix }}
 
-    - name: deploy  cicd_template_opencapacity_1
+    - name: deploy  demo  cicd_template_opencapacity
       shell: "{{ openshift_cli }} process -f {{ cicd_template_opencapacity_1 }} --param DEV_PROJECT=dev-{{ project_suffix }} --param STAGE_PROJECT=stage-{{ project_suffix }}  --param=EPHEMERAL={{ ephemeral|string|lower }} -n cicd-{{ project_suffix }} | {{ openshift_cli }} create -f - -n cicd-{{ project_suffix }}"
       ignore_errors: true

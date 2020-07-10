@@ -67,3 +67,20 @@ ansible-playbook playbooks/cd-v1/deploy-brewery-33.yml  -e "github_ref=ocp-3.11 
 sudo docker pull kameshsampath/apache-artemis
 
 oc import-image kameshsampath/apache-artemis --confirm --from  docker.io/kameshsampath/apache-artemis --insecure
+
+
+4.open-capacity-platform
+
+oc new-project dev-open-capacity
+
+oc policy add-role-to-group edit system:serviceaccounts:cicd-andrew -n dev-open-capacity
+
+oc adm pod-network join-projects --to=cicd-andrew dev-open-capacity
+
+oc adm policy add-scc-to-user privileged -z dev-open-capacity
+
+oc adm policy add-scc-to-user anyuid -z dev-open-capacity
+
+oc adm policy add-role-to-user view system:serviceaccount:dev-open-capacity:default
+
+ansible-playbook playbooks/cd-open-capacity/deploy-capacity-1.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
