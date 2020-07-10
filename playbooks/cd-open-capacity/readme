@@ -84,3 +84,23 @@ oc adm policy add-scc-to-user anyuid -z dev-open-capacity
 oc adm policy add-role-to-user view system:serviceaccount:dev-open-capacity:default
 
 ansible-playbook playbooks/cd-open-capacity/deploy-capacity-1.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
+
+https://docs.openshift.com/container-platform/3.11/using_images/db_images/mysql.html
+
+docker pull centos/mysql-57-centos7
+
+oc new-app -e MYSQL_USER=root -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=test openshift/mysql-57-centos7
+
+    registry.redhat.io/rhscl/mysql-56-rhel7
+
+oc rsh <pod>
+
+oc set env pod <pod_name> --list
+
+oc set env dc <dc_name> [<dc_name_2> ...] \
+  MYSQL_PASSWORD=<new_password> \
+  MYSQL_ROOT_PASSWORD=<new_root_password>
+
+  mysql -u $MYSQL_USER -p<new_password> -h $HOSTNAME $MYSQL_DATABASE -te "SELECT * FROM (SELECT database()) db CROSS JOIN (SELECT user()) u"
+
+  mysql -u root -p<new_root_password> -h $HOSTNAME $MYSQL_DATABASE -te "SELECT * FROM (SELECT database()) db CROSS JOIN (SELECT user()) u"
