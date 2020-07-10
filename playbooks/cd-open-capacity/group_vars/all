@@ -13,6 +13,8 @@ github_ref: ocp-3.11
 github_account2: woyaofuwu
 github_ref2: iteration-2
 github_ref3: iteration-3
+
+github_ref_2.0.1: 2.0.1
 ephemeral: false
 
 enable_che: true
@@ -26,3 +28,6 @@ demo_template_brewery_3: https://raw.githubusercontent.com/{{ github_account }}/
 demo_template_brewery_2: https://raw.githubusercontent.com/{{ github_account2 }}/brewery/{{ github_ref2 }}/cicd-template-brewery-2.yaml
 
 demo_template_brewery_33: https://raw.githubusercontent.com/{{ github_account2 }}/brewery/{{ github_ref3 }}/cicd-template-brewery-33.yaml
+
+cicd_template_opencapacity_1: https://raw.githubusercontent.com/{{ github_account2 }}/open-capacity-f/{{ github_ref_2.0.1 }}/cicd-template-1.yaml
+
