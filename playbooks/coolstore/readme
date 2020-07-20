@@ -1,0 +1,41 @@
+#full-start，
+webui 报错->换成woyao库并注释postinstall https://github.com/woyaowoyao/coolstore-microservice/blob/stable-ocp-3.11/coolstore-ui/package.json 
+
+oc login -u andrew
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-fuse/application-templates/master/fis-image-streams.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/eap/eap64-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/openjdk/openjdk18-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/processserver/processserver64-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/webserver/jws31-tomcat8-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/eap/eap70-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/decisionserver/decisionserver64-image-stream.json
+oc create -n openshift -f https://raw.githubusercontent.com/jboss-openshift/application-templates/ose-v1.4.14/datagrid/datagrid65-image-stream.json
+
+ansible-galaxy install -r playbooks/coolstore/requirements.yml
+ansible-playbook playbooks/coolstore/msa-full.yml
+#运行以下 创建相关项目名字空间
+ ansible-playbook playbooks/coolstore/msa-cicd-eap-min.yml
+ansible-playbook playbooks/coolstore/imagebuild-pipeline.yml #使用wo库，调整 {{project_name}}
+ 
+oc login -u andrew
+oc new-project demo-installer
+#
+oc adm policy add-cluster-role-to-user cluster-admin system:serviceaccount:demo-installer:default
+
+
+oc new-app -f helpers/coolstore-ansible-installer.yaml \
+    --param=DEMO_NAME=msa-full \
+    --param=PROJECT_ADMIN=andrew \
+    --param=COOLSTORE_GITHUB_REF=ocp-3.11 \
+    --param=ANSIBLE_PLAYBOOKS_VERSION=ocp-3.11
+	
+oc logs -f jobs/coolstore-ansible-installer
+
+
+#full-end
+
+oc new-app -f helpers/coolstore-ansible-installer.yaml \
+    --param=DEMO_NAME=msa-cicd-eap-full \
+    --param=PROJECT_ADMIN=andrew \
+    --param=COOLSTORE_GITHUB_REF=ocp-3.11 \
+    --param=ANSIBLE_PLAYBOOKS_VERSION=ocp-3.11

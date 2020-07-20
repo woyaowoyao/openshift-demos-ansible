@@ -104,3 +104,80 @@ oc set env dc <dc_name> [<dc_name_2> ...] \
   mysql -u $MYSQL_USER -p<new_password> -h $HOSTNAME $MYSQL_DATABASE -te "SELECT * FROM (SELECT database()) db CROSS JOIN (SELECT user()) u"
 
   mysql -u root -p<new_root_password> -h $HOSTNAME $MYSQL_DATABASE -te "SELECT * FROM (SELECT database()) db CROSS JOIN (SELECT user()) u"
+
+
+oc new-app --name hello https://github.com/woyaowoyao/DO288-apps --context-dir=nodejs-helloworld
+
+sh "oc delete bc,dc,svc,route,is -l app=api-gateway -n ${DEV_PROJECT}"
+sh "oc new-app --name api-gateway http://gogs:3000/gogs/open-capacity-f.git#2.0.1 --context-dir=api-gateway  -n ${DEV_PROJECT}" 
+
+oc new-build --strategy=docker -D $'FROM   registry.access.redhat.com/ubi8/ubi:8.0 \n
+ENV	  JAVA_OPTIONS -Xmx512m \n
+RUN   yum install -y --disableplugin=subscription-manager java-1.8.0-openjdk-headless && yum clean all --disableplugin=subscription-manager -y &&   mkdir -p /opt/app-root/bin \n
+ADD   api-gateway/target/api-gateway.jar /opt/app-root/bin/ \n
+COPY  run-app.sh /opt/app-root/bin/ \n
+RUN   chgrp -R 0 /opt/app-root &&  chmod -R g=u /opt/app-root \n
+EXPOSE 8080 \n
+USER  1001 \n
+CMD   /opt/app-root/bin/run-app.sh' --name api-gateway  -n ${DEV_PROJECT}
+
+
+oc import-image wildfly --from=openshift/wildfly-120-centos7 --confirm -n ${DEV_PROJECT} 
+
+cd cd github/open-capacity-f-gogs/cd api-gateway/
+sudo docker build -t ubijava8:1.0 .
+
+sudo docker info
+sudo docker logout
+sudo docker login docker.io
+robin9999/2867..t
+
+sudo docker tag ubijava8:1.0 docker.io/robin9999/ubijava8:1.0
+sudo docker push docker.io/robin9999/ubijava8:1.0
+oc import-image  ubijava8 --from=robin9999/ubijava8:1.0 --confirm --insecure
+oc import-image  ubijava8 --from=docker.io/robin9999/ubijava8:1.0 --confirm --insecure -n ${DEV_PROJECT}
+
+//end push docker.io
+sudo docker tag ubijava8:1.0 docker-registry.default.svc:5000/dev-andrew/ubijava8:1.0
+sudo docker tag ubijava8:1.0 docker-registry.default.svc:5000/dev-andrew/ubijava8:1.0
+docker login -u andrew -p $TOKEN docker-registry.default.svc:5000
+sudo docker push docker-registry.default.svc:5000/dev-andrew/ubijava8:1.0
+oc import-image  ubijava8:1.0 --from=ubijava8:1.0 --confirm --insecure -n ${DEV_PROJECT}
+
+
+oc new-app  --name jhost -i redhat-openjdk18-openshift:1.2 https://github.com/woyaowoyao/DO288-apps.git --context-dir=java-serverhost
+
+#制作本地镜像并导入到ocp        
+cd github/open-capacity-f/api-gateway
+sudo docker build -t ubijava8:1.1 .
+sudo docker tag ubijava8:1.0 docker.io/robin9999/ubijava8:1.0
+oc import-image  ubijava8 --from=docker.io/robin9999/ubijava8:1.0 --confirm --insecure -n ${DEV_PROJECT}
+sudo docker tag ubijava8:1.1 docker-registry.default.svc:5000/dev-andrew/ubijava8:1.1
+sudo docker push docker-registry.default.svc:5000/dev-andrew/ubijava8:1.1
+oc import-image  ubijava8:1.1 --from=ubijava8:1.1 --confirm --insecure
+
+oc new-app  --name  cust2image https://github.com/woyaofuwu/open-capacity-f#2.0.1 --context-dir=api-gateway
+
+
+#制作本地镜像并导入到ocp        
+cd github/open-capacity-f/api-gateway
+sudo docker build -t ubijava8:1.2 .
+sudo docker tag ubijava8:1.2 docker-registry.default.svc:5000/dev-andrew/ubijava8:1.2
+sudo docker login -u andrew -p $TOKEN docker-registry.default.svc:5000
+sudo docker push docker-registry.default.svc:5000/dev-andrew/ubijava8:1.2
+
+ping https://docker-registry-default.apps.c918.example.opentlc.com 
+
+oc import-image  ubijava8:1.2 --from=docker-registry.default.svc:5000/dev-andrew/ubijava8:1.2 --confirm --insecure -n ${DEV_PROJECT}
+
+
+oc delete all -l app=builds-for-managers
+
+oc new-app  --name builds-for-managers  https://github.com/woyaofuwu/DO288-apps.git --context-dir=builds-for-managers/app-src
+
+ oc new-build --strategy=docker --name=springboot-java https://github.com/ganrad/openshift-s2i-springboot-java.git
+oc create -f s2i-springboot.json
+docker build --build-arg MAVEN_VER=3.6.1 --build-arg GRADLE_VER=4.4 -t springboot-java-candidate .
+IMAGE_NAME=springboot-java-candidate test/run
+
+docker build --build-arg MAVEN_VER=3.6.1 --build-arg GRADLE_VER=4.4 -t springboot-java .
