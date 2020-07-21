@@ -1,7 +1,10 @@
 cd openshift-demos-ansible
 ansible-galaxy install -r playbooks/coolstore/requirements.yml
-ansible-playbook playbooks/cd-v1/deploy.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
+#work 初始化工具 cicd模板安装gogs nexus sonarqube jenkins 导入code pipeline
+#使用模板 https://github.com/woyaowoyao/openshift-cd-demo/blob/ocp-3.11/cicd-template.yaml
+ansible-playbook playbooks/cd-v1/deploy.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew project_admin=andrew"
 ansible-playbook playbooks/cd-v1/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
+
 
 1.
 
