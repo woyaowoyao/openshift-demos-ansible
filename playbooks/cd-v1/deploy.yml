@@ -21,6 +21,8 @@
       shell: |
         {{ openshift_cli }} policy add-role-to-user edit system:serviceaccount:cicd-{{ project_suffix }}:default -n dev-{{ project_suffix }}
         {{ openshift_cli }} policy add-role-to-user edit system:serviceaccount:cicd-{{ project_suffix }}:default -n stage-{{ project_suffix }}
+        {{ openshift_cli }} policy add-role-to-user edit system:serviceaccount:cicd-{{ project_suffix }}:jenkins -n dev-{{ project_suffix }}
+        {{ openshift_cli }} policy add-role-to-user edit system:serviceaccount:cicd-{{ project_suffix }}:jenkins -n stage-{{ project_suffix }}
       ignore_errors: true
 
     - name: assign user as project admin
