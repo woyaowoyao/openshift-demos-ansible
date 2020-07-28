@@ -1,9 +1,121 @@
+# openshift实战devops
+
+oc adm policy add-cluster-role-to-user cluster-admin andrew
+
 cd openshift-demos-ansible
 ansible-galaxy install -r playbooks/coolstore/requirements.yml
-#work 初始化工具 cicd模板安装gogs nexus sonarqube jenkins 导入code pipeline
+#work 初始化工具 cicd模板安装gogs nexus sonarqube jenkins 导入code pipeline  20200721
 #使用模板 https://github.com/woyaowoyao/openshift-cd-demo/blob/ocp-3.11/cicd-template.yaml
 ansible-playbook playbooks/cd-v1/deploy.yml  -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew project_admin=andrew"
 ansible-playbook playbooks/cd-v1/undeploy.yml   -e "github_ref=ocp-3.11 ephemeral=true project_suffix=andrew"
+
+
+a1.使用以下文件新增 bc C:\cloud\openshift\java\spring\open-capacity-f\register-center\pipeline-bc.yaml
+a2.
+ oc import-image redhat-openjdk18-openshift:1.2 --from=openshift/redhat-openjdk18-openshift:1.2 --confirm -n ${DEV_PROJECT} 
+
+   # dev
+    oc new-build --name=eureka-server --image-stream=redhat-openjdk18-openshift:1.4 --binary=true -n ${DEV_PROJECT}
+    #创建buildc 后 将from image namespace 改为openshift
+    oc new-app eureka-server:latest --allow-missing-images -n ${DEV_PROJECT}
+    oc set triggers dc -l app=eureka-server --containers=eureka-server --from-image=eureka-server:latest --manual -n ${DEV_PROJECT}
+              
+              # stage
+   oc new-app eureka-server:stage --allow-missing-images -n ${STAGE_PROJECT}
+    oc set triggers dc -l app=eureka-server --containers=eureka-server --from-image=eureka-server:stage --manual -n ${STAGE_PROJECT}
+    oc expose dc/eureka-server --port=1111 -n ${DEV_PROJECT}
+    oc expose svc/eureka-server -n ${DEV_PROJECT}          
+    oc rollout cancel dc/eureka-server -n ${STAGE_PROJECT}
+     #oc set probe dc/eureka-server --readiness --get-url=http://:8080/ws/demo/healthcheck --initial-delay-seconds=30 --failure-threshold=10 --period-seconds=10 -n ${DEV_PROJECT}
+     #oc set probe dc/eureka-server --liveness  --get-url=http://:8080/ws/demo/healthcheck --initial-delay-seconds=180 --failure-threshold=10 --period-seconds=10 -n ${DEV_PROJECT}
+
+
+ git clone https://github.com/woyaofuwu/open-capacity-f 
+ cd open-capacity-f/sql
+ #导入database 暴露mysql到容器集群外 https://segmentfault.com/a/1190000011679185
+ oc cp ./01.user-center.sql mysql-1-ks7x9:/tmp/01.user-center.sql
+oc cp ./02.oauth-center.sql mysql-1-ks7x9:/tmp/02.oauth-center.sql
+oc cp ./03.file-center.sql mysql-1-ks7x9:/tmp/03.file-center.sql
+oc cp ./04.sms-center.sql mysql-1-ks7x9:/tmp/04.sms-center.sql
+oc cp ./05.log-center.sql mysql-1-ks7x9:/tmp/05.log-center.sql
+oc cp ./06.job-center.sql mysql-1-ks7x9:/tmp/06.job-center.sql
+oc cp ./07.workflow-center.sql mysql-1-ks7x9:/tmp/07.workflow-center.sql
+oc cp ./08.transaction-center.sql mysql-1-ks7x9:/tmp/08.transaction-center.sql
+oc cp ./09.batch-center.sql mysql-1-ks7x9:/tmp/09.batch-center.sql
+oc cp ./10.选择性部署.sql mysql-1-ks7x9:/tmp/10.选择性部署.sql
+oc cp ./10.optional.sql mysql-1-ks7x9:/tmp/10.optional.sql
+
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/01.user-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/02.oauth-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/03.file-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/04.sms-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/05.log-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/06.job-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/07.workflow-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/08.transaction-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/09.batch-center.sql"
+oc exec mysql-1-ks7x9 -- bash -c "mysql --user=root < /tmp/10.optional.sql"
+
+
+oc new-app mysql-persistent --name mysql2 -e MYSQL_USER=root -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=test
+
+docker pull openshift/mysql-56-centos7
+oc new-app -e MYSQL_USER=root -e MYSQL_PASSWORD=root -e MYSQL_DATABASE=test openshift/mysql-56-centos7
+
+oc new-app --template=mysql-persistent \
+    -p MYSQL_USER=mysql \
+    -p MYSQL_PASSWORD=mysql \
+    -p MYSQL_DATABASE=catalogdb
+
+    oc new-app codecentric/springboot-maven3-centos~https://github.com/codecentric/springboot-sample-app
+
+    
+https://github.com/ganrad
+https://github.com/woyaofuwu/s2i-springboot
+https://github.com/search?p=3&q=springboot+assemble+s2i&type=Code
+https://github.com/jaysonzhao?tab=repositories
+https://github.com/woyaofuwu/chainedcicddemo
+https://github.com/jaysonzhao/s2i-java-openshift
+https://github.com/y-maki?tab=repositories
+https://github.com/woyaofuwu/openshift-workshop
+https://github.com/woyaofuwu/springboot-sample-app
+https://docs.openshift.com/container-platform/3.11/dev_guide/dev_tutorials/binary_builds.html
+https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/index#eureka
+https://developers.redhat.com/blog/2018/03/27/spring-boot-mysql-openshift/
+https://github.com/openshift/openshift-jee-sample/tree/master/.s2i/bin
+
+oc import-image java:8 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift --confir
+
+a3.            
+问题could not be resolved: structlog4j:structlog4j-api:jar:1.0.0 ->增加aliyun maven 到Nexus到私库
+http://maven.aliyun.com/nexus/content/groups/public/
+https://maven.aliyun.com/nexus/content/groups/public
+
+#https://copyfuture.com/blogs-details/20200521104537183wlrw9vll7l8l0cb
+#https://blog.csdn.net/lishuoboy/article/details/99946230
+
+
+
+# spring-boot openshift
+oc new-app codecentric/springboot-maven3-centos~https://github.com/woyaofuwu/springboot-sample-app
+#https://github.com/codecentric/springboot-sample-app
+
+oc new-app --name=eureka-server codecentric/springboot-maven3-centos~https://github.com/woyaofuwu/open-capacity-f#2.0.1     --context-dir=register-center/eureka-server 
+
+# spring-boot openshift end 
+
+oc new-build https://github.com/jaysonzhao/chainedcicddemo.git --strategy=pipeline
+oc new-build https://github.com/woyaofuwu/chainedcicddemo.git --strategy=pipeline
+
+oc new-build --binary=true --name="hellotest" --image-stream=openshift/java:8
+
+oc start-build chainedcicddemo
+
+oc new-app hellotest
+
+oc expose svc/hellotest
+
+oc new-app codecentric/springboot-maven3-centos~https://github.com/woyaofuwu/springboot-sample-app --name=springboot-sample-app
 
 
 1.
