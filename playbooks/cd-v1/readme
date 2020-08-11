@@ -83,6 +83,7 @@ https://docs.openshift.com/container-platform/3.11/dev_guide/dev_tutorials/binar
 https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/index#eureka
 https://developers.redhat.com/blog/2018/03/27/spring-boot-mysql-openshift/
 https://github.com/openshift/openshift-jee-sample/tree/master/.s2i/bin
+https://github.com/piomin/sample-spring-microservices-new.git
 
 oc import-image java:8 --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift --confir
 
@@ -117,6 +118,19 @@ oc expose svc/hellotest
 
 oc new-app codecentric/springboot-maven3-centos~https://github.com/woyaofuwu/springboot-sample-app --name=springboot-sample-app
 
+
+# Run brewery on ocp with jenkins pipeline 2020-0729
+oc adm policy add-role-to-user view system:serviceaccount:brewery:default 
+oc adm policy add-role-to-user view system:serviceaccount:brewery:jenkins
+
+oc adm policy add-role-to-user edit system:serviceaccount:cicd-andrew:default -n brewery
+oc adm policy add-role-to-user edit system:serviceaccount:cicd-andrew:jenkins -n brewery
+        
+oc adm policy add-scc-to-user privileged -z brewery
+oc adm policy add-scc-to-user anyuid -z brewery 
+
+Failed: PushImageToRegistryFailed->解决方法,重新启动docker-registry oc scale dc/docker-registry --replicas=0 && oc scale dc/docker-registry --replicas=1
+ oc scale dc/router --replicas=0 && oc scale dc/router --replicas=1
 
 1.
 
