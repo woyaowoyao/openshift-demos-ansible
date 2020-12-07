@@ -95,6 +95,7 @@ https://maven.aliyun.com/nexus/content/groups/public
 #https://copyfuture.com/blogs-details/20200521104537183wlrw9vll7l8l0cb
 #https://blog.csdn.net/lishuoboy/article/details/99946230
 
+ oc create -f https://raw.githubusercontent.com/sclorg/mysql-container/master/examples/replica/mysql_replica.json
 
 
 # spring-boot openshift
